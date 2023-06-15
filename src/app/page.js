@@ -1,50 +1,75 @@
 "use client";
 
-import { useState } from "react";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import React, { useState, useEffect } from "react";
 
-const queryClient = new QueryClient();
+const YourComponent = () => {
+  const [search, setSearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [nominate, setNominate] = useState([]);
 
-export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Example />
-    </QueryClientProvider>
-  );
-}
+  useEffect(() => {
+    const fetchMovies = async () => {
+      if (search.trim() !== "") {
+        const response = await fetch(
+          `http://www.omdbapi.com/?s=${search}&apikey=99661966`
+        );
+        const data = await response.json();
+        setSearchResults(
+          data.Response === "True" ? data.Search.slice(0, 3) : []
+        );
+      } else {
+        setSearchResults([]);
+      }
+    };
 
-function Example() {
-  const [search, setSearch] = useState();
-  const [nominate, setNominate] = useState();
-  const [resault, setResault] = useState();
-  function handleInput(event) {
+    fetchMovies();
+  }, [search]);
+
+  const handleInputChange = (event) => {
     setSearch(event.target.value);
-  }
-  const { isLoading, error, data } = useQuery("repoData", () =>
-    fetch(`http://www.omdbapi.com/?s=${search}&apikey=99661966`).then((res) =>
-      res.json()
-    )
-  );
-  let searchData= data.Search
-  function handleNominate(searchData){
-    setNominate([...nominate, searchData])
-  }
-  console.log(nominate)
-  if (isLoading) return "Loading...";
+  };
+  const handleNominate = (item) => {
 
-  if (error) return "An error has occurred: " + error.message;
+    setNominate([...nominate, item]);
+  };
+
+  function handleDelete(item) {
+    setNominate(nominate.filter((movie) => movie.imdbID !== item));
+  }
 
   return (
-    <div>
-      <input onChange={handleInput} type="text" value={search}></input>
-      <p>
-        {data.Search.slice(0, 3).map((item) => (
+    <>
+      <div>
+        <input type="text" value={search} onChange={handleInputChange} />
+        <p>Search results:</p>
+        {searchResults.length > 0 && search.trim() !== ""
+          ? searchResults.map((item) => (
+              <p key={item.imdbID}>
+                {item.Title}{" "}
+                <button
+                  onClick={() => handleNominate(item)}
+                  disabled={nominate.some(
+                    (movie) =>
+                      movie.imdbID === item.imdbID || nominate.length > 4
+                  )}
+                >
+                  Nominate
+                </button>
+              </p>
+            ))
+          : search.trim() !== "" && <p>No movies found.</p>}
+      </div>
+      <div>
+        <h2>Nominated Movies</h2>
+        {nominate.map((item) => (
           <p key={item.imdbID}>
-            {item.Title} - {item.Year}- {item.Type}{" "}
-            <button onClick={handleNominate}>Nominate</button>{" "}
+            {item.Title}{" "}
+            <button onClick={() => handleDelete(item.imdbID)}>Remove</button>
           </p>
-        ))}{" "}
-      </p>
-    </div>
+        ))}
+      </div>
+    </>
   );
-}
+};
+
+export default YourComponent;
