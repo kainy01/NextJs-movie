@@ -11,7 +11,7 @@ const YourComponent = () => {
     const fetchMovies = async () => {
       if (search.trim() !== "") {
         const response = await fetch(
-          `http://www.omdbapi.com/?s=${search}&apikey=99661966`
+          `https://www.omdbapi.com/?s=${search}&apikey=99661966`
         );
         const data = await response.json();
         setSearchResults(
