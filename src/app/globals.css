@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: #cce4f2 !important;
+}
+
+h1 {
+  color: #f66375 !important;
+}
+h2 {
+  color: #4797b1 !important;
+}
+h6 {
+  color: #fb929e !important;
+}
+.searchIcon {
+  color: #fff !important;
+  background: #f66375 !important;
+}
+
+.form-control:focus {
+  border: none !important;
+  box-shadow: 0rem rgba(13, 109, 253, 0) !important;
+}
+
+button:disabled {
+  opacity: 0.3 !important;
+  cursor: not-allowed;
+}
+
+button {
+  border: none !important;
+}
+.img-container {
+  overflow: hidden;
+}
+.img-container img {
+  width: 50px !important;
+  height: 70px !important;
+}
